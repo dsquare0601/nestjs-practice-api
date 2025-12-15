@@ -5,94 +5,227 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+<p align="center">A comprehensive NestJS practice API showcasing best practices for building production-ready RESTful APIs with TypeScript. This project demonstrates authentication, CRUD operations, validation, error handling, and comprehensive testing strategies.</p>
 
-## Description
+## Features Implemented
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 🔐 Authentication Module
 
-## Project setup
+- JWT-based authentication with access and refresh tokens
+- User registration with password hashing using bcrypt
+- Login/logout functionality
+- Token refresh mechanism
+- Protected routes with JWT guards
+- Password confirmation validation
 
-```bash
-$ npm install
+### 📦 Products CRUD Module
+
+- Complete CRUD operations (Create, Read, Update, Delete)
+- Pagination, filtering, and sorting
+- Search functionality
+- Bulk operations (create, update, delete multiple products)
+- Custom DTOs with validation
+- Business logic validation
+
+### ✅ Input Validation
+
+- Class-validator and class-transformer integration
+- Custom validation decorators:
+  - [`IsNoSpaces`](src/common/decorators/validation.decorators.ts) - Ensures strings contain no spaces
+  - [`IsPriceRange`](src/common/decorators/validation.decorators.ts) - Validates price within range
+  - [`Match`](src/common/decorators/validation.decorators.ts) - Matches fields (e.g., password confirmation)
+- Custom pipes:
+  - [`TrimPipe`](src/common/pipes/trim.pipe.ts) - Trims whitespace from inputs
+  - [`CustomValidationPipe`](src/common/pipes/custom-validation.pipe.ts) - Custom validation error formatting
+- Transform decorators for data sanitization
+
+### 🛡️ Error Handling
+
+- Global exception filters:
+  - [`AllExceptionsFilter`](src/common/filters/http-exception.filter.ts) - Catches all HTTP exceptions
+  - [`DatabaseExceptionFilter`](src/common/filters/database-exception.filter.ts) - Handles database errors
+  - [`ValidationExceptionFilter`](src/common/filters/validation-exception.filter.ts) - Formats validation errors
+- Custom exceptions:
+  - [`BusinessException`](src/common/exceptions/business.exception.ts) - Business logic errors
+  - [`DatabaseException`](src/common/exceptions/database.exception.ts) - Database operation errors
+- Standardized error response format
+- Detailed error logging with [`CustomLoggerService`](src/common/services/logger.service.ts)
+
+### 🧪 Testing
+
+- Comprehensive unit tests for services and controllers
+- Mocking strategies for dependencies
+- Guard and interceptor testing
+- Test coverage reporting
+- E2E tests setup
+
+## Tech Stack
+
+- **Framework**: NestJS
+- **Language**: TypeScript
+- **Database**: PostgreSQL with TypeORM
+- **Authentication**: JWT (jsonwebtoken), Passport
+- **Validation**: class-validator, class-transformer
+- **Password Hashing**: bcrypt
+- **Testing**: Jest
+- **Code Quality**: ESLint, Prettier
+
+## Project Structure
+
+```
+src/
+├── auth/                    # Authentication module
+│   ├── dto/                 # Login/Register DTOs
+│   ├── guards/              # JWT auth guards
+│   ├── strategies/          # Passport JWT strategy
+│   └── interfaces/          # Request interfaces
+├── common/                  # Shared resources
+│   ├── constants/           # HTTP status messages
+│   ├── decorators/          # Custom validation decorators
+│   ├── exceptions/          # Custom exception classes
+│   ├── filters/             # Exception filters
+│   ├── pipes/               # Custom pipes
+│   └── services/            # Logger service
+├── products/                # Products CRUD module
+│   ├── dto/                 # Product DTOs
+│   ├── entities/            # Product entity
+│   └── ...
+└── users/                   # User entity
 ```
 
-## Compile and run the project
+## Project Setup
 
 ```bash
-# development
+# Install dependencies
+$ npm install
+
+# Setup environment variables
+$ cp .env.example .env
+# Update .env with your database credentials and JWT secrets
+```
+
+### Environment Variables
+
+Create a `.env` file with the following variables:
+
+```env
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+
+# JWT
+JWT_SECRET=your-secret-key
+JWT_EXPIRATION=1h
+JWT_REFRESH_SECRET=your-refresh-secret-key
+JWT_REFRESH_EXPIRATION=7d
+
+# Server
+PORT=3000
+```
+
+## Compile and Run the Project
+
+```bash
+# Development
 $ npm run start
 
-# watch mode
+# Watch mode
 $ npm run start:dev
 
-# production mode
+# Production mode
 $ npm run start:prod
 ```
 
-## Run tests
+## Run Tests
 
 ```bash
-# unit tests
+# Unit tests
 $ npm run test
 
-# e2e tests
+# E2E tests
 $ npm run test:e2e
 
-# test coverage
+# Test coverage
 $ npm run test:cov
 ```
 
-## Deployment
+## API Endpoints
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### Authentication
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- `POST /auth/register` - Register new user
+- `POST /auth/login` - Login user
+- `POST /auth/refresh` - Refresh access token (protected)
+- `POST /auth/logout` - Logout user (protected)
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+### Products
+
+- `GET /products` - Get all products (with pagination, search, filter)
+- `GET /products/:id` - Get product by ID
+- `POST /products` - Create product (protected)
+- `PATCH /products/:id` - Update product (protected)
+- `DELETE /products/:id` - Delete product (protected)
+- `POST /products/bulk` - Create multiple products (protected)
+- `DELETE /products/bulk/delete` - Delete multiple products (protected)
+- `PATCH /products/bulk/update` - Update multiple products (protected)
+
+## Key Implementations
+
+### Custom Validation Decorators
+
+```typescript
+// Password without spaces
+@IsNoSpaces({ message: 'Password cannot contain spaces' })
+password: string;
+
+// Price range validation
+@IsPriceRange(0, 100000, { message: 'Price must be between 0 and 100000' })
+price: number;
+
+// Password confirmation
+@Match('password', { message: 'Passwords do not match' })
+confirmPassword: string;
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Exception Handling
 
-## Resources
+All exceptions are caught and formatted consistently:
 
-Check out a few resources that may come in handy when working with NestJS:
+```json
+{
+  "success": false,
+  "statusCode": 400,
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "path": "/api/endpoint",
+  "method": "POST",
+  "message": "Error message",
+  "errors": [...]
+}
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Authentication Guards
 
-## Support
+Protected routes use [`JwtAuthGuard`](src/auth/guards/jwt-auth.guard.ts):
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```typescript
+@UseGuards(JwtAuthGuard)
+@Post('products')
+create(@Body() dto: CreateProductDto) {
+  return this.productsService.create(dto);
+}
+```
 
-## Stay in touch
+## Code Quality
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+# Lint code
+$ npm run lint
 
-## License
+# Format code
+$ npm run format
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Stay in Touch
+
+- Author - [Dsquare](https://www.linkedin.com/in/dsquare0601/)
+- Website - [https://iamdsquare.vercel.app/](https://iamdsquare.vercel.app/)
+- Twitter - [@dsquare0601](https://twitter.com/dsquare0601)
