@@ -7,9 +7,13 @@ import { User } from '../users/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ConfigService } from '@nestjs/config';
+import { CustomLoggerService } from 'src/common/services/logger.service';
+import { ErrorMessages } from 'src/common/constants/http-status.constants';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new CustomLoggerService(AuthService.name);
+
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -30,17 +34,23 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
+    this.logger.log(`Login attempt for: ${dto.email}`);
+
     const user = await this.userRepository.findOne({
       where: { email: dto.email },
     });
 
     if (!user || !(await bcrypt.compare(dto.password, user.password))) {
-      throw new UnauthorizedException('Invalid credentials');
+      this.logger.warn(
+        `Failed login - user not found or invalid password: ${dto.email}`,
+      );
+      throw new UnauthorizedException(ErrorMessages.UNAUTHORIZED);
     }
 
     const tokens = await this.getTokens(user.id, user.email);
     await this.updateRefreshToken(user.id, tokens.refreshToken);
 
+    this.logger.log(`Successful login: ${dto.email}`);
     return tokens;
   }
 
@@ -74,12 +84,12 @@ export class AuthService {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
     if (!user || !user.refreshToken) {
-      throw new UnauthorizedException('Access Denied');
+      throw new UnauthorizedException(ErrorMessages.FORBIDDEN);
     }
 
     const isMatch = await bcrypt.compare(refreshToken, user.refreshToken);
     if (!isMatch) {
-      throw new UnauthorizedException('Access Denied');
+      throw new UnauthorizedException(ErrorMessages.FORBIDDEN);
     }
 
     const tokens = await this.getTokens(user.id, user.email);

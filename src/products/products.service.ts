@@ -1,21 +1,34 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ErrorMessages,
+  SuccessMessages,
+} from './../common/constants/http-status.constants';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
+import { BusinessException } from 'src/common/exceptions/business.exception';
+import { CustomLoggerService } from 'src/common/services/logger.service';
 
 @Injectable()
 export class ProductsService {
+  private readonly logger = new CustomLoggerService(ProductsService.name);
+
   constructor(
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
   ) {}
 
   async create(dto: CreateProductDto) {
+    this.logger.log(`Creating product: ${dto.name}`);
     const product = this.productRepository.create(dto);
-    return this.productRepository.save(product);
+    await this.productRepository.save(product);
+    return {
+      message: SuccessMessages.CREATED,
+      data: product,
+    };
   }
 
   async findAll(query: QueryProductDto) {
@@ -60,21 +73,43 @@ export class ProductsService {
   async findOne(id: number) {
     const product = await this.productRepository.findOne({ where: { id } });
     if (!product) {
-      throw new NotFoundException(`Product #${id} not found`);
+      throw new NotFoundException(ErrorMessages.NOT_FOUND);
     }
     return product;
   }
 
   async update(id: number, dto: UpdateProductDto) {
     const product = await this.findOne(id);
+
+    // Business logic validation
+    if (dto.price && dto.price < 0) {
+      throw new BusinessException('Price cannot be negative');
+    }
+
+    if (dto.stock && dto.stock < 0) {
+      throw new BusinessException('Stock cannot be negative');
+    }
+
     Object.assign(product, dto);
-    return this.productRepository.save(product);
+    await this.productRepository.save(product);
+    return {
+      message: SuccessMessages.UPDATED,
+      data: product,
+    };
   }
 
   async remove(id: number) {
+    this.logger.warn(`Attempting to delete product: ${id}`);
+
     const product = await this.findOne(id);
+
+    if (product.stock > 0) {
+      throw new BusinessException(ErrorMessages.CONFLICT, HttpStatus.CONFLICT);
+    }
+
     await this.productRepository.remove(product);
-    return { message: 'Product deleted successfully' };
+    this.logger.log(`Product ${id} deleted successfully`);
+    return { message: SuccessMessages.DELETED };
   }
 
   // Bulk operations
