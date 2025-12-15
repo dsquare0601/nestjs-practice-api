@@ -9,8 +9,8 @@ import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
-import { BusinessException } from 'src/common/exceptions/business.exception';
-import { CustomLoggerService } from 'src/common/services/logger.service';
+import { BusinessException } from '../common/exceptions/business.exception';
+import { CustomLoggerService } from '../common/services/logger.service';
 
 @Injectable()
 export class ProductsService {
@@ -102,11 +102,6 @@ export class ProductsService {
     this.logger.warn(`Attempting to delete product: ${id}`);
 
     const product = await this.findOne(id);
-
-    if (product.stock > 0) {
-      throw new BusinessException(ErrorMessages.CONFLICT, HttpStatus.CONFLICT);
-    }
-
     await this.productRepository.remove(product);
     this.logger.log(`Product ${id} deleted successfully`);
     return { message: SuccessMessages.DELETED };

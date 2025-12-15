@@ -1,5 +1,8 @@
 import { IsEmail, IsString, MinLength } from 'class-validator';
-import { IsNoSpaces, Match } from 'src/common/decorators/validation.decorators';
+import {
+  IsNoSpaces,
+  Match,
+} from '../../common/decorators/validation.decorators';
 
 export class RegisterDto {
   @IsEmail({}, { message: 'Please provide a valid email address' })

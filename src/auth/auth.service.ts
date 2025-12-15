@@ -7,8 +7,8 @@ import { User } from '../users/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ConfigService } from '@nestjs/config';
-import { CustomLoggerService } from 'src/common/services/logger.service';
-import { ErrorMessages } from 'src/common/constants/http-status.constants';
+import { CustomLoggerService } from '../common/services/logger.service';
+import { ErrorMessages } from '../common/constants/http-status.constants';
 
 @Injectable()
 export class AuthService {

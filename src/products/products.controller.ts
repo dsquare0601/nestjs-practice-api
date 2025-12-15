@@ -15,9 +15,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { TrimPipe } from 'src/common/pipes/trim.pipe';
-import { CustomValidationPipe } from 'src/common/pipes/custom-validation.pipe';
-import { BusinessException } from 'src/common/exceptions/business.exception';
+import { TrimPipe } from '../common/pipes/trim.pipe';
+import { CustomValidationPipe } from '../common/pipes/custom-validation.pipe';
+import { BusinessException } from '../common/exceptions/business.exception';
 
 @Controller('products')
 export class ProductsController {

@@ -7,6 +7,8 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Strip properties not in DTO
@@ -31,6 +33,10 @@ async function bootstrap() {
         });
       },
     }),
+  );
+
+  // Global exception filters
+  app.useGlobalFilters(
     new ValidationExceptionFilter(),
     new DatabaseExceptionFilter(),
     new AllExceptionsFilter(),

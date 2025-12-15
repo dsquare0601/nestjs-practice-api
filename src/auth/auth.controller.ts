@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RequestWithUser } from './interfaces/request-with-user.interface';
 
 @Controller('auth')
 export class AuthController {
